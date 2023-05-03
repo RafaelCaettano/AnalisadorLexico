@@ -1,28 +1,25 @@
 ﻿using AnalisadorLexico;
+using System.Text.RegularExpressions;
 
 var compiler = new Compiler();
 
-compiler.AddToken("OP_ATRIBUICAO");
-compiler.AddToken("OP_DECISAO");
-compiler.AddToken("OP_DECISAO_FUGA");
-compiler.AddToken("MENOR_QUE");
-compiler.AddToken("OP_BLOCO");
-compiler.AddToken("PARENTESES_ABERTO");
-compiler.AddToken("PARENTESES_FECHADO");
-compiler.AddToken("NUMBER", isNumber:true);
-compiler.AddToken("STRING", isString:true);
-compiler.AddToken("IDENTIFICADOR", isIdent:true);
-compiler.AddToken("MAIOR_QUE");
+compiler.AddToken("OP_ATRIBUICAO", new Regex(@"="));
+compiler.AddToken("OP_DECISAO", new Regex(@"if"));
+compiler.AddToken("OP_DECISAO_FUGA", new Regex(@"else"));
+compiler.AddToken("MENOR_QUE", new Regex(@"<"));
+compiler.AddToken("OP_BLOCO", new Regex(@":"));
+compiler.AddToken("PARENTESES_ABERTO", new Regex(@"\("));
+compiler.AddToken("PARENTESES_FECHADO", new Regex(@"\)"));
+compiler.AddToken("NUMBER", new Regex(@"\d+"), isNumber:true);
+compiler.AddToken("STRING", new Regex("\"((\\\\\")|[^\"])*\""), isString:true);
+compiler.AddToken("STRING_INCOMPLETA", new Regex("\"[^\"\n]*$"), isIncompleteString:true);
+compiler.AddToken("IDENTIFICADOR", new Regex(@"[a-zA-Z]+"), isIdent:true);
+compiler.AddToken("MAIOR_QUE", new Regex(@">"));
 
-compiler.AddLexitoken("=", 0);
-compiler.AddLexitoken("if", 1);
-compiler.AddLexitoken("else", 2);
-compiler.AddLexitoken("<", 3);
-compiler.AddLexitoken(":", 4);
-compiler.AddLexitoken("(", 5);
-compiler.AddLexitoken(")", 6);
-compiler.AddLexitoken("NUMBER", 7);
-compiler.AddLexitoken("STRING", 8);
-compiler.AddLexitoken("IDENTIFICADOR", 9);
+compiler.Tokenize("C:/Users/rafaC/Downloads/atividade002E.cop");
 
-compiler.ReadFile("C:/Users/rafaC/Downloads/atividade001.cop");
+Console.WriteLine("Código válido: " + compiler.LexicalAnalysis());
+
+Console.WriteLine($"\n{("Lexema").PadRight(20)} \t {("Token").PadRight(20)}");
+foreach (var lexitoken in compiler.LexicalTable.Lexitokens)
+    Console.WriteLine($"{lexitoken.Lexema.PadRight(20)} \t {lexitoken.Token.Name.PadRight(20)}");
